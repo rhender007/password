@@ -4,7 +4,7 @@
 INSTALL_PATH="/usr/local/bin/zip2hashcat"
 
 # Create the script content
-cat << 'EOF' > "$INSTALL_PATH"
+sudo tee "$INSTALL_PATH" > /dev/null << 'EOF'
 #!/bin/bash
 
 # Check if a zip file was provided
@@ -18,6 +18,7 @@ ZIP_FILE="$1"
 HASH_FILE="/tmp/ziphash.txt"
 FORMATTED_HASH_FILE="/tmp/formatted_ziphash.txt"
 WORDLIST="/usr/share/wordlists/rockyou.txt"
+EXTRACT_DIR="/tmp/extracted_zip_contents"
 
 # Check if the zip file exists
 if [ ! -f "$ZIP_FILE" ]; then
@@ -37,22 +38,39 @@ if [ -s "$FORMATTED_HASH_FILE" ]; then
   cat "$FORMATTED_HASH_FILE"
 else
   echo "Error: No compatible hash found in the zip file."
-  rm "$HASH_FILE"
+  sudo rm "$HASH_FILE"
   exit 1
 fi
 
 # Attempt to crack the password with hashcat
 hashcat -m 17210 "$FORMATTED_HASH_FILE" "$WORDLIST" --quiet
 
-# Show the cracked password if found
-hashcat -m 17210 --show "$FORMATTED_HASH_FILE"
+# Get the cracked password
+CRACKED_PASSWORD=$(hashcat -m 17210 --show "$FORMATTED_HASH_FILE" | awk -F ':' '{print $NF}')
+
+# Check if a password was found
+if [ -z "$CRACKED_PASSWORD" ]; then
+  echo "Password could not be cracked."
+  sudo rm "$HASH_FILE" "$FORMATTED_HASH_FILE"
+  exit 1
+fi
+
+echo "Password found: $CRACKED_PASSWORD"
+
+# Extract the zip file with the found password
+mkdir -p "$EXTRACT_DIR"
+unzip -P "$CRACKED_PASSWORD" "$ZIP_FILE" -d "$EXTRACT_DIR" >/dev/null 2>&1
+
+# Recursively display all files in the extracted directory
+echo "Contents of the extracted files:"
+find "$EXTRACT_DIR" -type f -exec cat {} +
 
 # Clean up temporary files
-rm "$HASH_FILE" "$FORMATTED_HASH_FILE"
+sudo rm "$HASH_FILE" "$FORMATTED_HASH_FILE"
 EOF
 
 # Make the script executable
-chmod +x "$INSTALL_PATH"
+sudo chmod +x "$INSTALL_PATH"
 
 # Confirm installation
 if [ -f "$INSTALL_PATH" ]; then
