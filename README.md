@@ -2,7 +2,7 @@
 
 chmod +x deploy_skyhash.sh
 
-./deploy_skyhash.sh
+sudo deploy_skyhash.sh
 
 ## run w skyhash
 Usage: skyhash 'SKY-uuuu-' hashfile
