@@ -1,4 +1,4 @@
-# password
+# SKY HASH
 
 chmod +x install_skyhash.sh
 
