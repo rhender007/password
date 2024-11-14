@@ -15,20 +15,28 @@ if [[ ! $MIDDLE_CHARS =~ ^[A-Z]{4}$ ]]; then
     exit 1
 fi
 
+# Read first hash from file
+FIRST_HASH=$(head -n 1 "$HASH_FILE")
+
+# Determine hash mode based on format
+if [[ $FIRST_HASH == '$1$'* ]]; then
+    HASH_MODE=500  # md5crypt
+else
+    HASH_MODE=0    # MD5
+fi
+
 BASE_CRIB="SKY-${MIDDLE_CHARS}-"
 MASK="${BASE_CRIB}?d?d?d?d"
-
 echo "Running Hashcat with pattern: $BASE_CRIB and mask: ${MASK}"
-hashcat -a 3 -m 500 --status --status-timer=10 --outfile=cracked_passwords.txt "$HASH_FILE" "$MASK"
+hashcat -a 3 -m $HASH_MODE --status --status-timer=10 --outfile=cracked_passwords.txt "$HASH_FILE" "$MASK"
 
 if [ $? -eq 0 ]; then
     echo "Hashcat finished successfully. Displaying cracked passwords:"
-    hashcat -m 500 --show "$HASH_FILE"
+    hashcat -m $HASH_MODE --show "$HASH_FILE"
 else
     echo "Hashcat encountered an error. Check your settings and try again."
 fi
 EOF
-
 chmod +x skyhash
 sudo mv skyhash /usr/local/bin/
 echo "skyhash has been installed to /usr/local/bin and is ready to use."
