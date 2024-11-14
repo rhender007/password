@@ -50,7 +50,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Base word set to '$word'" | tee -a "$log_fi
 
 # Rule variables for use in commands
 RULES_VAR="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
-# OPTIONAL_SPECIAL_RULE="/mnt/c/Tools/hashcat/rules/optional_special.rule"
+# OPTIONAL_SPECIAL_RULE="/mnt/c/Tools/hashcat/rules/optional_specialv2.rule"
+EXCLAMATION_END_RULE="/mnt/c/Tools/hashcat/rules/exclamation_end.rule"
 LEETSPEAK_RULE="/mnt/c/Tools/hashcat/rules/leetspeak.rule"
 INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/Incisive-leetspeak.rule"
 
@@ -78,8 +79,8 @@ fi
 # Generate toggled word list
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating toggled word list..." | tee -a "$log_file"
 # removed optional special here
-#  -r "$OPTIONAL_SPECIAL_RULE" 
-toggled_words_output=$(echo "$word" | /usr/bin/hashcat -r "$RULES_VAR" --stdout)
+# -r "$OPTIONAL_SPECIAL_RULE"
+toggled_words_output=$(echo "$word" | /usr/bin/hashcat -r "$RULES_VAR"  --stdout)
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Toggled words generated: $(echo "$toggled_words_output" | wc -l)" | tee -a "$log_file"
 
 # Append lowercase version
@@ -142,9 +143,24 @@ options=("?d" "?l" "?u")
 # crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_=+[]{}|;:,.<>?/\' -o crunch_mask.txt
 
 # greedy list - try common ones 
-crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_?' -o crunch_mask.txt
+# crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_?' -o crunch_mask.txt
+
+# let's try a smaller list. we'll put the ! back in
+crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' -o crunch_mask.txt
 hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt wl_beforemasks.txt crunch_mask.txt
-hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt wl_beforemasks.txt crunch_mask.txt
+hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt crunch_mask.txt wl_beforemasks.txt
+
+
+# EXCLAMATION_END_RULE
+# crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' -o crunch_mask.txt
+# hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt wl_beforemasks.txt crunch_mask.txt
+
+# # Append exclamation end rule to the end of each word in wl_beforemasks.txt
+sed -i 's/$/!/' wl_beforemasks.txt
+# 1 less mask length because of the exclamation mark
+$max_mask_length-=1
+crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' -o crunch_mask.txt
+hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt crunch_mask.txt wl_beforemasks.txt
 
 # Dump the contents of the hashcat potfile
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Dumping the contents of potfile:" | tee -a "$log_file"
