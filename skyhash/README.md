@@ -5,8 +5,8 @@ chmod +x install_skyhash.sh
 sudo install_skyhash.sh
 
 ## run w skyhash
-Usage: skyhash 'SKY-uuuu-' hashfile
+Usage: skyhash 'MASK' hashfile
 
-Example: skyhash 'SKY-LRNB-' hashes.txt
+Example: skyhash 'MASK' hashes.txt
 
-skyhash 'SKY-LRNB-' hashes.txt
+skyhash 'MASK' hashes.txt
