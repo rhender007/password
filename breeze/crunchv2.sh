@@ -48,12 +48,20 @@ read -p "Enter the base word for generation (default: breeze): " input_word
 word=${input_word:-breeze}
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Base word set to '$word'" | tee -a "$log_file"
 
+
+# incisive-leet-first.rule
+# incisive-leet.rule
+# global-leet.rule
+
 # Rule variables for use in commands
-RULES_VAR="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
+TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
 # OPTIONAL_SPECIAL_RULE="/mnt/c/Tools/hashcat/rules/optional_specialv2.rule"
 # EXCLAMATION_END_RULE="/mnt/c/Tools/hashcat/rules/exclamation_end.rule"
-LEETSPEAK_RULE="/mnt/c/Tools/hashcat/rules/leetspeak.rule"
-INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/Incisive-leetspeak.rule"
+LEETSPEAK_RULE="/mnt/c/Tools/hashcat/rules/global-leet.rule"
+INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet.rule"
+# PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/partial-combinations-leet.rule"
+PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/leetspeak.rule"
+# PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet-first.rule"
 
 # Create the variations directory if it doesn't exist
 mkdir -p "$INPUT_DIR"
@@ -80,27 +88,30 @@ fi
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating toggled word list..." | tee -a "$log_file"
 # removed optional special here
 # -r "$OPTIONAL_SPECIAL_RULE"
-toggled_words_output=$(echo "$word" | /usr/bin/hashcat -r "$RULES_VAR"  --stdout)
+# -r "$PARTIAL_LEET_RULE" 
+# key is to apply toggles FIRST!!!
+# -r "$LEETSPEAK_RULE"
+transformations=$(echo "$word" | /usr/bin/hashcat -r "$TOGGLES_RULE" -r "$INCISIVE_LEET_RULE" --stdout)
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Toggled words generated: $(echo "$toggled_words_output" | wc -l)" | tee -a "$log_file"
 
-# Append lowercase version
-toggled_words_output+=$'\n'"${word,,}"
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Lowercase version of the base word added" | tee -a "$log_file"
+# # Append lowercase version
+# transformations+=$'\n'"${word,,}"
+# echo "[$(date '+%Y-%m-%d %H:%M:%S')] Total transformations of the base word added" | tee -a "$log_file"
 
-# Generate leet transformations
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating leet transformations..." | tee -a "$log_file"
-leet_words_output=$(printf "%s\n" "$toggled_words_output" | /usr/bin/hashcat -r "$LEETSPEAK_RULE" --stdout)
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Leet transformations generated: $(echo "$leet_words_output" | wc -l)" | tee -a "$log_file"
+# # Generate leet transformations
+# echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating leet transformations..." | tee -a "$log_file"
+# leet_words_output=$(printf "%s\n" "$toggled_words_output" | /usr/bin/hashcat -r "$LEETSPEAK_RULE" --stdout)
+# echo "[$(date '+%Y-%m-%d %H:%M:%S')] Leet transformations generated: $(echo "$leet_words_output" | wc -l)" | tee -a "$log_file"
 
-# Generate incisive leet transformations
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating incisive leet transformations..." | tee -a "$log_file"
-incisive_leet_output=$(printf "%s\n" "$toggled_words_output" | /usr/bin/hashcat -r "$INCISIVE_LEET_RULE" --stdout)
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Incisive leet transformations generated: $(echo "$incisive_leet_output" | wc -l)" | tee -a "$log_file"
+# # Generate incisive leet transformations
+# echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generating incisive leet transformations..." | tee -a "$log_file"
+# incisive_leet_output=$(printf "%s\n" "$toggled_words_output" | /usr/bin/hashcat -r "$INCISIVE_LEET_RULE" --stdout)
+# echo "[$(date '+%Y-%m-%d %H:%M:%S')] Incisive leet transformations generated: $(echo "$incisive_leet_output" | wc -l)" | tee -a "$log_file"
 
 # Combine and deduplicate word variations in WL_BEFORE_MASKS
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Combining generated word variations and deduplicating..." | tee -a "$log_file"
 {
-    printf "%s\n" "$toggled_words_output" "$leet_words_output" "$incisive_leet_output" | sort -u
+    printf "%s\n" "$transformations" | sort -u
 } > "$WL_BEFORE_MASKS"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Full deduplicated list written to $WL_BEFORE_MASKS" | tee -a "$log_file"
 
@@ -110,7 +121,9 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Full deduplicated list written to $WL_BEFOR
 # Generate masks up to max_mask_length
 word_length=${#word}
 max_mask_length=$((10 - word_length))
-options=("?d" "?l" "?u")
+
+
+# options=("?d" "?l" "?u")
 
 # skip mask generation for now. only use crunch and greedy list
 # generate_masks() {
