@@ -76,6 +76,7 @@ crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQ
 
 # a 1 for combinator attack
 hashcat -m 500 -a 1 -O -S --status --status-timer=10 -w 3 hashes.txt "$WL_BEFORE_MASKS" "$MASKS_FILE"
+hashcat -m 500 -a 1 -O -S --status --status-timer=10 -w 3 hashes.txt "$MASKS_FILE" "$WL_BEFORE_MASKS"
 
 $max_mask_length-=1
 crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' -o "$MASKS_FILE"
