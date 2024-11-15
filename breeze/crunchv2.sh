@@ -51,7 +51,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Base word set to '$word'" | tee -a "$log_fi
 # Rule variables for use in commands
 RULES_VAR="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
 # OPTIONAL_SPECIAL_RULE="/mnt/c/Tools/hashcat/rules/optional_specialv2.rule"
-EXCLAMATION_END_RULE="/mnt/c/Tools/hashcat/rules/exclamation_end.rule"
+# EXCLAMATION_END_RULE="/mnt/c/Tools/hashcat/rules/exclamation_end.rule"
 LEETSPEAK_RULE="/mnt/c/Tools/hashcat/rules/leetspeak.rule"
 INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/Incisive-leetspeak.rule"
 
@@ -156,11 +156,16 @@ hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt crunch_mask.txt 
 # hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt wl_beforemasks.txt crunch_mask.txt
 
 # # Append exclamation end rule to the end of each word in wl_beforemasks.txt
-sed -i 's/$/!/' wl_beforemasks.txt
+# using -k instead to append the exclamation mark to the end of each word in wl_beforemasks.txt
+# sed -i 's/$/!/' wl_beforemasks.txt
 # 1 less mask length because of the exclamation mark
-$max_mask_length-=1
+max_mask_length=$((max_mask_length - 1))
 crunch 1 $max_mask_length 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' -o crunch_mask.txt
-hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt crunch_mask.txt wl_beforemasks.txt
+
+# use the --rule-right to append the ! to the end of each word in the wl_beforemasks.txt
+# if i use -S it removes the ! from the end of the word
+hashcat -m 500 -O -a 1 --status --status-timer=1 --rule-right='$!' hashes.txt crunch_mask.txt wl_beforemasks.txt
+# hashcat -m 500 -a 1 -O -S --status --status-timer=10 hashes.txt crunch_mask.txt wl_beforemasks.txt
 
 # Dump the contents of the hashcat potfile
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Dumping the contents of potfile:" | tee -a "$log_file"
