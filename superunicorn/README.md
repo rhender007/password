@@ -14,4 +14,4 @@ sudo cp first_pass_with_wordlist.sh /usr/local/bin/first_pass_with_wordlist
 
 sudo cp rockyou.sh /usr/local/bin/rockyou
 
-sudo cp weakpasssh /usr/local/bin/weakpass
+sudo cp weakpass.sh /usr/local/bin/weakpass
