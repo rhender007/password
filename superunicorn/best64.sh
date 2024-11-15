@@ -22,7 +22,7 @@ POTFILE="/home/ubuntu/.local/share/hashcat/hashcat.potfile"
 PROJECT_NAME=$(basename "$PWD")
 INPUT_DIR=$(pwd)
 HASHES_FILE="${INPUT_DIR}/hashes.txt"
-SUPER_UNICORN_RULE="/mnt/c/Tools/hashcat/rules/SuperUnicorn.rule"
+BEST64_RULE="/mnt/c/Tools/hashcat/rules/best64.rule"
 WORD_LIST="${INPUT_DIR}/wordlist.txt"
 WORD_LIST_CLEAN="${INPUT_DIR}/wordlist_clean.txt"
 WORD_LIST_CLEAN_LESS_THAN_10="${INPUT_DIR}/wordlist_clean_less_than_10.txt"
@@ -40,7 +40,7 @@ echo "Log started at $(date)" | tee -a "$log_file"
 sed 's/\r$//' "$WORD_LIST" | awk '{$1=$1};1' > "$WORD_LIST_CLEAN" | tee -a "$log_file"
 awk 'length < 10' "$WORD_LIST_CLEAN" > "$WORD_LIST_CLEAN_LESS_THAN_10" | tee -a "$log_file"
 
-hashcat -m 500 -a 0 -O -S --status --status-timer=10 "$HASHES_FILE" -r "$SUPER_UNICORN_RULE" "$WORD_LIST_CLEAN_LESS_THAN_10" | tee -a "$log_file"
+hashcat -m 500 -a 0 -O -S --status --status-timer=10 "$HASHES_FILE" -r "$BEST64_RULE" "$WORD_LIST_CLEAN_LESS_THAN_10" | tee -a "$log_file"
 
 # Dump the contents of the hashcat potfile
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Dumping the contents of potfile:" | tee -a "$log_file"
