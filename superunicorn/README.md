@@ -1,6 +1,6 @@
 sudo cp superunicorn.sh /usr/local/bin/superunicorn
 
-sudo cp dive.rule /usr/local/bin/dive
+sudo cp dive.sh /usr/local/bin/dive
 
 sudo cp onerule.sh /usr/local/bin/onerule
 
