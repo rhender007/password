@@ -34,8 +34,8 @@ WORD_LIST_CLEAN_LESS_THAN_10="${INPUT_DIR}/wordlist_clean_less_than_10.txt"
 # Rule variables for use in commands
 # TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
 TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles10.rule"
-INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet-first.rule"
-PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet-first.rule"
+INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leetspeak.rule"
+# PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet-first.rule"
 LOWERCASE_RULE="/mnt/c/Tools/hashcat/rules/lowercase.rule"
 MASKS_FILE="masks.txt"
 
