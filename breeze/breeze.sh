@@ -20,17 +20,17 @@ pkill -f '/usr/bin/hashcat' > /dev/null 2>&1
 
 # Directories and file paths as variables
 POTFILE="/home/ubuntu/.local/share/hashcat/hashcat.potfile"
+
 # Set project name
 PROJECT_NAME=$(basename "$PWD")
 INPUT_DIR="/mnt/c/Users/rhend/Desktop/input/${PROJECT_NAME}"
-HYBRID_CANDIDATES_FILE="${INPUT_DIR}/hybrid_candidates.txt"
-WL_BEFORE_MASKS="${INPUT_DIR}/wl_beforemasks.txt"
-HASHES_FILE="${INPUT_DIR}/hashes.txt"
-LOGS_DIR="./logs"  # Set log directory to ./logs
+LOGS_DIR="${INPUT_DIR}/logs"  # Set log directory to ./logs
 
+HASHES_FILE="${INPUT_DIR}/hashes.txt"
 WORD_LIST="${INPUT_DIR}/wordlist.txt"
 WORD_LIST_CLEAN="${INPUT_DIR}/wordlist_clean.txt"
 WORD_LIST_CLEAN_LESS_THAN_10="${INPUT_DIR}/wordlist_clean_less_than_10.txt"
+WL_BEFORE_MASKS="${INPUT_DIR}/wl_beforemasks.txt"
 # Rule variables for use in commands
 # TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles${#word}.rule"
 TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles10.rule"
@@ -44,12 +44,6 @@ mkdir -p "$INPUT_DIR"
 
 # Ensure the logs directory exists
 mkdir -p "$LOGS_DIR"
-
-# Remove existing hybrid_candidates.txt file if it exists
-if [ -f "$HYBRID_CANDIDATES_FILE" ]; then
-    rm -f "$HYBRID_CANDIDATES_FILE"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Removed existing $HYBRID_CANDIDATES_FILE" | tee -a "$log_file"
-fi
 
 # Create a timestamped log file
 timestamp=$(date '+%Y%m%d_%H%M%S')
