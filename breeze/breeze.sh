@@ -36,7 +36,7 @@ WL_BEFORE_MASKS="${INPUT_DIR}/wl_beforemasks.txt"
 TOGGLES_RULE="/mnt/c/Tools/hashcat/rules/toggles10.rule"
 INCISIVE_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leetspeak.rule"
 # PARTIAL_LEET_RULE="/mnt/c/Tools/hashcat/rules/incisive-leet-first.rule"
-LOWERCASE_RULE="/mnt/c/Tools/hashcat/rules/lowercase.rule"
+# LOWERCASE_RULE="/mnt/c/Tools/hashcat/rules/lowercase.rule"
 MASKS_FILE="masks.txt"
 
 # Create the variations directory if it doesn't exist
